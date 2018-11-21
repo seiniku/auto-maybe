@@ -8,6 +8,7 @@ from oauth2client import file, client, tools
 import logging
 import os
 import sys
+import argparse
 
 # since this is meant to run in cron, keep logs
 # create /var/og/maybe.log manually and chown
@@ -26,6 +27,12 @@ logger.addHandler(ch)
 # If modifying these scopes, delete the file token.json.
 SCOPES = 'https://www.googleapis.com/auth/calendar.events'
 
+parser = argparse.ArgumentParser(description='automatically reply to events in gcal')
+parser.add_argument('-t', '--token', help='path of token.json', type=str)
+parser.add_argument('--noauth_local_webserver', action="store_true", default=1)
+#parser.add_argument('-c', '--cred', help='path of credentials.json', type=str)
+args = parser.parse_args()
+
 # creators.txt in the same directory contains a list of emails, one per line,
 # these are the creators that will be automatically replied to
 with open('creators.txt', 'r') as f:
@@ -41,7 +48,7 @@ def main():
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    store = file.Storage('token.json')
+    store = file.Storage(args.token)
     creds = store.get()
     if not creds or creds.invalid:
         flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
