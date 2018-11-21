@@ -31,7 +31,9 @@ parser = argparse.ArgumentParser(description='automatically reply to events in g
 parser.add_argument('-t', '--token', help='path of token.json', type=str, default='token.json')
 parser.add_argument('-c', '--creators', help='path of creators.txt', type=str, default='creators.txt')
 parser.add_argument('--noauth_local_webserver', action="store_true", default=1)
-parser.add_argument('-c', '--cred', help='path of credentials.json', type=str, default='credentials.json')
+parser.add_argument('-d', '--cred', help='path of credentials.json', type=str, default='credentials.json')
+parser.add_argument('-r', '--response', help='path of credentials.json', type=str, default='accepted', choices=['accepted', 'declined', 'tentative'])
+
 args = parser.parse_args()
 
 # creators.txt in the same directory contains a list of emails, one per line,
@@ -75,7 +77,7 @@ def main():
                         status = attendee.get('responseStatus')
                         if status == 'needsAction':
                             start = event['start'].get('dateTime', event['start'].get('date'))
-                            attendee['responseStatus'] = 'accepted'
+                            attendee['responseStatus'] = args.response
                             service.events().update(calendarId='primary',
                                                    eventId=event['id'],
                                                    sendUpdates='none',
