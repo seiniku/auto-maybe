@@ -28,14 +28,15 @@ logger.addHandler(ch)
 SCOPES = 'https://www.googleapis.com/auth/calendar.events'
 
 parser = argparse.ArgumentParser(description='automatically reply to events in gcal')
-parser.add_argument('-t', '--token', help='path of token.json', type=str)
+parser.add_argument('-t', '--token', help='path of token.json', type=str, default='token.json')
+parser.add_argument('-c', '--creators', help='path of creators.txt', type=str, default='creators.txt')
 parser.add_argument('--noauth_local_webserver', action="store_true", default=1)
-#parser.add_argument('-c', '--cred', help='path of credentials.json', type=str)
+parser.add_argument('-c', '--cred', help='path of credentials.json', type=str, default='credentials.json')
 args = parser.parse_args()
 
 # creators.txt in the same directory contains a list of emails, one per line,
 # these are the creators that will be automatically replied to
-with open('creators.txt', 'r') as f:
+with open(args.creators, 'r') as f:
     CREATORS = []
     for creator in f:
         CREATORS.append(creator.strip())
@@ -51,7 +52,7 @@ def main():
     store = file.Storage(args.token)
     creds = store.get()
     if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
+        flow = client.flow_from_clientsecrets(args.cred, SCOPES)
         creds = tools.run_flow(flow, store)
         logger.error("credentials invalid")
     service = build('calendar', 'v3', http=creds.authorize(Http()))

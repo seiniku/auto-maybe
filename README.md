@@ -20,5 +20,5 @@ python auto-maybe.py --noauth_local_webserver
 ```
 If running in cron, use something like this:
 ```
-2 11 * * 1-5 /home/username/git/auto-maybe/auto-maybe.py -t /home/username/git/auto-maybe/token.json
+2 8 * * 1-5 /home/username/git/auto-maybe/auto-maybe.py -c '/home/username/git/auto-maybe/creators.txt' -t '/home/username/git/auto-maybe/token.json' > /tmp/auto-maybe-cron.log 2>&1
 ```
