@@ -22,3 +22,5 @@ If running in cron, use something like this:
 ```
 2 8 * * 1-5 /home/username/git/auto-maybe/auto-maybe.py -c '/home/username/git/auto-maybe/creators.txt' -t '/home/username/git/auto-maybe/token.json' > /tmp/auto-maybe-cron.log 2>&1
 ```
+
+[Look here for help with setting up the api.](https://developers.google.com/calendar/quickstart/python)
