@@ -32,7 +32,7 @@ parser.add_argument('-t', '--token', help='path of token.json', type=str, defaul
 parser.add_argument('-c', '--creators', help='path of creators.txt', type=str, default='creators.txt')
 parser.add_argument('--noauth_local_webserver', action="store_true", default=1)
 parser.add_argument('-d', '--cred', help='path of credentials.json', type=str, default='credentials.json')
-parser.add_argument('-r', '--response', help='path of credentials.json', type=str, default='accepted', choices=['accepted', 'declined', 'tentative'])
+parser.add_argument('-r', '--response', help='sets the response type that will be sent', type=str, default='accepted', choices=['accepted', 'declined', 'tentative'])
 
 args = parser.parse_args()
 
@@ -66,7 +66,7 @@ def main():
                                         maxResults=10, singleEvents=True,
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
-
+    updated_something = False;
     if not events:
         logger.warning('No upcoming events found.')
     for event in events:
@@ -84,5 +84,8 @@ def main():
                                                    body=event).execute()
                             logger.info('replied to: ' + start + " " +
                                         event['summary'])
+                            updated_something = True;
+    if not updated_something:
+        logger.info('No relevant events found')
 if __name__ == '__main__':
     main()
