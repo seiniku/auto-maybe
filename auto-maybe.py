@@ -9,7 +9,7 @@ import logging
 import os
 import sys
 import argparse
-
+import random
 # since this is meant to run in cron, keep logs
 # create /var/og/maybe.log manually and chown
 # to whatever user is running the script
@@ -33,7 +33,8 @@ parser.add_argument('-c', '--creators', help='path of creators.txt', type=str, d
 parser.add_argument('--noauth_local_webserver', action="store_true", default=1)
 parser.add_argument('-d', '--cred', help='path of credentials.json', type=str, default='credentials.json')
 parser.add_argument('-r', '--response', help='sets the response type that will be sent', type=str, default='accepted', choices=['accepted', 'declined', 'tentative'])
-
+parser.add_argument('--random', help='sets the response to a random choice perfect for irratating management', default=False,
+                    action='store_true')
 args = parser.parse_args()
 
 # creators.txt in the same directory contains a list of emails, one per line,
@@ -45,6 +46,14 @@ with open(args.creators, 'r') as f:
 logger.info("creators: " + str(CREATORS))
 
 def main():
+
+    if not args.random:
+        response = args.response
+    else:
+        rlist = ['accepted', 'tentative', 'declined']
+        response = random.choice(rlist)
+        logger.info("random response selected " + str(response))
+
     """Shows basic usage of the Google Calendar API.
     most of this comes from Google's quickstart guide
     """
@@ -77,7 +86,7 @@ def main():
                         status = attendee.get('responseStatus')
                         if status == 'needsAction':
                             start = event['start'].get('dateTime', event['start'].get('date'))
-                            attendee['responseStatus'] = args.response
+                            attendee['responseStatus'] = response
                             service.events().update(calendarId='primary',
                                                    eventId=event['id'],
                                                    sendUpdates='none',

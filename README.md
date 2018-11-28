@@ -24,3 +24,20 @@ If running in cron, use something like this:
 ```
 
 [Look here for help with setting up the api.](https://developers.google.com/calendar/quickstart/python)
+
+This supports several cli arguments:
+
+```
+optional arguments:
+  -h, --help            show this help message and exit
+  -t TOKEN, --token TOKEN
+                        path of token.json
+  -c CREATORS, --creators CREATORS
+                        path of creators.txt
+  --noauth_local_webserver
+  -d CRED, --cred CRED  path of credentials.json
+  -r {accepted,declined,tentative}, --response {accepted,declined,tentative}
+                        sets the response type that will be sent
+  --random              sets the response to a random choice perfect for
+                        irratating management
+```
