@@ -43,7 +43,7 @@ fh.setLevel(logging.INFO)
 ff = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 fh.setFormatter(ff)
 ch = logging.StreamHandler()
-if args.verbose:
+if args.verbose or args.whatif:
     ch.setLevel(logging.INFO)
 else:
     ch.setLevel(logging.WARNING)
