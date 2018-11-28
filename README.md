@@ -40,4 +40,6 @@ optional arguments:
                         sets the response type that will be sent
   --random              sets the response to a random choice perfect for
                         irratating management
+  -v, --verbose		logs to console
+
 ```
