@@ -47,12 +47,6 @@ logger.info("creators: " + str(CREATORS))
 
 def main():
 
-    if not args.random:
-        response = args.response
-    else:
-        rlist = ['accepted', 'tentative', 'declined']
-        response = random.choice(rlist)
-        logger.info("random response selected " + str(response))
 
     """Shows basic usage of the Google Calendar API.
     most of this comes from Google's quickstart guide
@@ -85,6 +79,12 @@ def main():
                     if attendee.get('self'):
                         status = attendee.get('responseStatus')
                         if status == 'needsAction':
+                            if not args.random:
+                                response = args.response
+                            else:
+                                rlist = ['accepted', 'tentative', 'declined']
+                                response = random.choice(rlist)
+                                logger.info("random response selected " + str(response))
                             start = event['start'].get('dateTime', event['start'].get('date'))
                             attendee['responseStatus'] = response
                             service.events().update(calendarId='primary',
