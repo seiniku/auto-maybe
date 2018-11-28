@@ -10,19 +10,6 @@ import os
 import sys
 import argparse
 import random
-# since this is meant to run in cron, keep logs
-# create /var/og/maybe.log manually and chown
-# to whatever user is running the script
-logger = logging.getLogger('auto-maybe')
-logger.setLevel(logging.INFO)
-fh = logging.FileHandler('/var/log/maybe.log')
-fh.setLevel(logging.INFO)
-ff = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-fh.setFormatter(ff)
-ch = logging.StreamHandler()
-ch.setLevel(logging.WARNING)
-logger.addHandler(fh)
-logger.addHandler(ch)
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = 'https://www.googleapis.com/auth/calendar.events'
@@ -35,6 +22,8 @@ parser.add_argument('-d', '--cred', help='path of credentials.json', type=str, d
 parser.add_argument('-r', '--response', help='sets the response type that will be sent', type=str, default='accepted', choices=['accepted', 'declined', 'tentative'])
 parser.add_argument('--random', help='sets the response to a random choice perfect for irratating management', default=False,
                     action='store_true')
+parser.add_argument('-v', '--verbose', help='logs to console', default=False,
+                    action='store_true')
 args = parser.parse_args()
 
 # creators.txt in the same directory contains a list of emails, one per line,
@@ -43,7 +32,27 @@ with open(args.creators, 'r') as f:
     CREATORS = []
     for creator in f:
         CREATORS.append(creator.strip())
+
+
+# since this is meant to run in cron, keep logs
+# create /var/og/maybe.log manually and chown
+# to whatever user is running the script
+logger = logging.getLogger('auto-maybe')
+logger.setLevel(logging.INFO)
+fh = logging.FileHandler('/var/log/maybe.log')
+fh.setLevel(logging.INFO)
+ff = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(ff)
+ch = logging.StreamHandler()
+if args.verbose:
+    ch.setLevel(logging.INFO)
+else:
+    ch.setLevel(logging.WARNING)
+logger.addHandler(fh)
+logger.addHandler(ch)
+
 logger.info("creators: " + str(CREATORS))
+
 
 def main():
 
