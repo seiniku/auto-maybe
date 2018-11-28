@@ -41,5 +41,5 @@ optional arguments:
   --random              sets the response to a random choice perfect for
                         irratating management
   -v, --verbose		logs to console
-
+  --whatif 		logs but does not update event
 ```
