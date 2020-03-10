@@ -28,11 +28,7 @@ args = parser.parse_args()
 # creators.txt in the same directory contains a list of emails, one per line,
 # these are the creators that will be automatically replied to
 with open(args.creators, 'r') as f:
-    CREATORS = []
-    for creator in f:
-        CREATORS.append(creator.strip())
-
-
+    CREATORS = [creator.strip() for creator in f]
 # since this is meant to run in cron, keep logs
 # create /var/og/maybe.log manually and chown
 # to whatever user is running the script
@@ -77,35 +73,38 @@ def main():
                                         maxResults=10, singleEvents=True,
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
-    updated_something = False;
+    updated_something = False
     if not events:
         logger.warning('No upcoming events found.')
     for event in events:
-        if event.has_key('creator') and event.has_key('attendees'):
-            if event['creator'].get('email') in CREATORS:
-                for attendee in event['attendees']:
-                    if attendee.get('self'):
-                        status = attendee.get('responseStatus')
-                        if status == 'needsAction':
-                            if not args.random:
-                                response = args.response
-                            else:
-                                rlist = ['accepted', 'tentative', 'declined']
-                                response = random.choice(rlist)
-                                logger.info("random response selected " + str(response))
-                            start = event['start'].get('dateTime', event['start'].get('date'))
-                            attendee['responseStatus'] = response
-                            updated_something = True;
-                            if not args.whatif:
-                                service.events().update(calendarId='primary',
-                                                   eventId=event['id'],
-                                                   sendUpdates='none',
-                                                   body=event).execute()
-                                logger.info('replied ' + response + ' to: ' + start + " " + event['summary'])
-                            else:
-                                logger.warning('would reply ' + response +
-                                               ' to: ' + start + ' ' +
-                                               event['summary'])
+        if (
+            event.has_key('creator')
+            and event.has_key('attendees')
+            and event['creator'].get('email') in CREATORS
+        ):
+            for attendee in event['attendees']:
+                if attendee.get('self'):
+                    status = attendee.get('responseStatus')
+                    if status == 'needsAction':
+                        if args.random:
+                            rlist = ['accepted', 'tentative', 'declined']
+                            response = random.choice(rlist)
+                            logger.info("random response selected " + str(response))
+                        else:
+                            response = args.response
+                        start = event['start'].get('dateTime', event['start'].get('date'))
+                        attendee['responseStatus'] = response
+                        updated_something = True
+                        if args.whatif:
+                            logger.warning('would reply ' + response +
+                                           ' to: ' + start + ' ' +
+                                           event['summary'])
+                        else:
+                            service.events().update(calendarId='primary',
+                                               eventId=event['id'],
+                                               sendUpdates='none',
+                                               body=event).execute()
+                            logger.info('replied ' + response + ' to: ' + start + " " + event['summary'])
     if not updated_something:
         logger.info('No relevant events found')
 if __name__ == '__main__':
